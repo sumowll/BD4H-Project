@@ -54,12 +54,17 @@ def create_pickled_data():
     for singleton in sampled_singlet:
         if i % 50 == 0:
             print(i)
-        dataset[singleton] = out_df[out_df['term1'] == singleton][[
+
+        out_list = out_df[out_df['term1'] == singleton][[
             'term2', 'PPMI', 'co_occur_freq']].values.tolist()
+        out_tuples = [tuple(x) for x in out_list]
+
+        dataset[singleton] = out_tuples
         i += 1
 
     with open('sub_neighbors_dict_ppmi_per_Bin_1.pkl', 'wb') as handle:
-        pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(list(dataset.items()), handle,
+                    protocol=pickle.HIGHEST_PROTOCOL)
 
 
 if __name__ == '__main__':
