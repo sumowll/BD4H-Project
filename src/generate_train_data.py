@@ -62,8 +62,8 @@ def create_pickled_data():
         dataset[singleton] = out_tuples
         i += 1
 
-    with open('sub_neighbors_dict_ppmi_per_Bin_1.pkl', 'wb') as handle:
-        pickle.dump(list(dataset.items()), handle,
+    with open('sub_neighbors_dict_ppmi_perBin_1.pkl', 'wb') as handle:
+        pickle.dump(dataset, handle,
                     protocol=pickle.HIGHEST_PROTOCOL)
 
 
