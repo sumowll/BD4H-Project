@@ -1,5 +1,14 @@
 import pandas as pd
 import numpy as np
+from random import sample
+import pickle
+
+
+def sample_terms(singlet_list, rate=0.01):
+
+    num = round(len(singlet_list) * rate)
+
+    return sample(singlet_list, num)
 
 
 def calculate_PPMI():
@@ -24,3 +33,34 @@ def calculate_PPMI():
     out_df['PPMI'] = np.where(out_df['PMI'] < 0, 0, out_df['PMI'])
 
     return out_df
+
+
+def create_pickled_data():
+
+    singlet = pd.read_csv("singlets_terms_perBin_1d.txt",
+                          delimiter="\t", header=None)
+
+    singlet = singlet.rename(columns={0: "term", 1: "singleton_freq"})
+
+    singlet_list = singlet['term'].to_list()
+
+    sampled_singlet = sample_terms(singlet_list)
+    print(len(sampled_singlet))
+
+    out_df = calculate_PPMI()
+
+    dataset = {}
+    i = 0
+    for singleton in sampled_singlet:
+        if i % 50 == 0:
+            print(i)
+        dataset[singleton] = out_df[out_df['term1'] == singleton][[
+            'term2', 'PPMI', 'co_occur_freq']].values.tolist()
+        i += 1
+
+    with open('sub_neighbors_dict_ppmi_per_Bin_1.pkl', 'wb') as handle:
+        pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+if __name__ == '__main__':
+    create_pickled_data()
